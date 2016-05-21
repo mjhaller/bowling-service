@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import bowling.game.Game;
+import bowling.repository.GameRepository;
+
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 
@@ -17,7 +20,6 @@ public class DatabaseLoader implements CommandLineRunner {
 	@Override
 	public void run(String... strings) throws Exception {
 		Game game = new Game();
-		game.setScoringStrategyType(GameType.TENPIN);
 		this.repository.save(game);
 	}
 }

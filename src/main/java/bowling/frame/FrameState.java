@@ -1,4 +1,4 @@
-package bowling;
+package bowling.frame;
 
 public enum FrameState {
 	INITIAL,
