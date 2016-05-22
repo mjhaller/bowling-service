@@ -53,13 +53,19 @@ public class Frame extends AbstractEntity {
 		return false;
 	}
 	
+	public boolean finished()
+	{
+		return maxBalls() == getBalls().size();
+	}
+	
 	public boolean addBall(Ball ball)
 	{
-		if (getBalls().size() > maxBalls())
+		int newSize = getBalls().size() + 1;
+		if (newSize > maxBalls())
 		{
-			throw new IllegalArgumentException("Maximum balls for this frame reached: " + maxBalls());
+			throw new IllegalArgumentException("Maximum balls for this frame reached: " + maxBalls());			
 		}
-		ball.setNumber(getBalls().size() + 1);
+		ball.setNumber(newSize);
 		ball.resolveMark();
 		return getBalls().add(ball);
 	}
@@ -81,13 +87,24 @@ public class Frame extends AbstractEntity {
 		private Iterator<Ball> balls;
 		private Integer score = null;
 		private Integer nextBallToPlay;
+		private boolean lastFrame;
 		
-		public FrameContext(FrameState state, Iterator<Ball> balls) {
+		public FrameContext(FrameState state, Iterator<Ball> balls, boolean lastFrame) {
 			super();
 			this.state = state;
 			this.balls = balls;
+			this.lastFrame = lastFrame;
 		}
 		
+		public boolean isLastFrame()
+		{
+			return lastFrame;
+		}
+		
+		public Integer getNextBallToPlay()
+		{
+			return this.nextBallToPlay;
+		}
 		public void setNextBallToPlay(Integer nextBallToPlay)
 		{
 			this.nextBallToPlay = nextBallToPlay;
@@ -128,6 +145,7 @@ public class Frame extends AbstractEntity {
 		while (context.getState().calculate(context));
 		this.frameScore = context.getScore();
 		this.frameState = context.getState();
+		this.nextBall = context.getNextBallToPlay();
 	}
 	
 	public int maxBalls()

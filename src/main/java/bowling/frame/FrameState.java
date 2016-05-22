@@ -4,10 +4,11 @@ import bowling.Loggable;
 import bowling.frame.Frame.FrameContext;
 
 public enum FrameState implements FrameScoring, Loggable {
-	INITIAL {
+	INITIAL(false) {
 		@Override
 		public boolean calculate(FrameContext context) {
 			Ball nextBall = context.nextBall();
+			context.setNextBallToPlay(1);
 			if (nextBall == null) {
 				log().info("null ball"); 
 				return false;
@@ -31,11 +32,12 @@ public enum FrameState implements FrameScoring, Loggable {
 
 		}
 	},
-	OPEN {
+	OPEN(false) {
 		@Override
 		public boolean calculate(FrameContext context) {
 			Ball nextBall = context.nextBall();
 			if (nextBall == null) {
+				context.setNextBallToPlay(2);
 				return false;
 			}
 			log().info(nextBall.toString());
@@ -49,16 +51,18 @@ public enum FrameState implements FrameScoring, Loggable {
 				context.setState(RESOLVED);
 				return true;
 			}
-
 			return false;
 		}
 	},
-	SPARE {
+	SPARE(true) {
 
 		@Override
 		public boolean calculate(FrameContext context) {
 			Ball nextBall = context.nextBall();
 			if (nextBall == null) {
+				context.setNextBallToPlay(2);
+				if (context.isLastFrame())
+					context.setNextBallToPlay(3);
 				return false;
 			}
 			log().info(nextBall.toString());
@@ -68,12 +72,14 @@ public enum FrameState implements FrameScoring, Loggable {
 		}
 
 	},
-	STRIKE_BALL1 {
+	STRIKE_BALL1(true) {
 
 		@Override
 		public boolean calculate(FrameContext context) {
 			Ball nextBall = context.nextBall();
 			if (nextBall == null) {
+				if (context.isLastFrame())
+					context.setNextBallToPlay(2);
 				return false;
 			}
 			log().info(nextBall.toString());
@@ -82,12 +88,14 @@ public enum FrameState implements FrameScoring, Loggable {
 			return true;
 		}
 	},
-	STRIKE_BALL2 {
+	STRIKE_BALL2(true) {
 
 		@Override
 		public boolean calculate(FrameContext context) {
 			Ball nextBall = context.nextBall();
 			if (nextBall == null) {
+				if (context.isLastFrame())
+					context.setNextBallToPlay(3);
 				return false;
 			}
 			log().info(nextBall.toString());
@@ -96,12 +104,24 @@ public enum FrameState implements FrameScoring, Loggable {
 			return true;
 		}
 	},
-	RESOLVED {
+	RESOLVED(true) {
 
 		@Override
 		public boolean calculate(FrameContext context) {
 			context.setNextBallToPlay(1);
 			return false;
 		}
+	};
+	
+	private boolean playNextFrame;
+	
+	FrameState(boolean playNextFrame)
+	{
+		this.playNextFrame = playNextFrame;
+	}
+	
+	public boolean isPlayNextFrame()
+	{
+		return this.playNextFrame;
 	}
 }

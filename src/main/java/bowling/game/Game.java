@@ -38,25 +38,32 @@ public class Game extends AbstractEntity implements Loggable {
 	private Integer totalScore = 0;
 	
 	@Transient
-	private Integer nextFrame;
+	private Frame nextFrame;
 	
 
-	public Integer getNextFrame()
+	public Frame getNextFrame()
 	{
 		return this.nextFrame;
 	}
 	
 	public void setNextFrame()
 	{
-		Frame last = getFrames().getLast();
-		this.nextFrame = last.getNumber(); 
-		if (last.getFrameState() == FrameState.RESOLVED)
+		Frame last = getFrames().peekLast();
+		this.nextFrame = last; 
+		if (last == null || (last.getFrameState().isPlayNextFrame() && !last.isLastFrame()))
 		{
-			this.nextFrame = last.getNumber() + 1;
+			Frame frame = new Frame();
+			frame.setGame(this);
+			frame.setNumber(last == null ? 1 : last.getNumber() + 1);
+			this.nextFrame = frame;
+			return;
 		}
 		if (last.isLastFrame())
 		{
-			this.nextFrame = last.getNumber() + 1;
+			if (last.finished())
+			{
+				this.nextFrame = null;
+			}
 		}
 	}
 	
@@ -69,6 +76,7 @@ public class Game extends AbstractEntity implements Loggable {
 			allBalls.addAll(frame.getBalls());
 		}
 		
+		this.totalScore = 0;
 		for (Frame frame : getFrames())
 		{
 			log().info(frame.toString());
@@ -80,7 +88,7 @@ public class Game extends AbstractEntity implements Loggable {
 					remainingBalls.add(ball);
 				}
 			}
-			frame.resolveState(new FrameContext(FrameState.INITIAL,remainingBalls.iterator()));
+			frame.resolveState(new FrameContext(FrameState.INITIAL,remainingBalls.iterator(), frame.isLastFrame()));
 			if (frame.getFrameState() == FrameState.RESOLVED) 
 			{
 				this.totalScore += frame.getFrameScore(); 

@@ -16,7 +16,7 @@ public class TestBuilders {
 
 	public static class GameBuilder {
 
-		private static final List<Integer> allFrames = GameType.TENPIN.allPins();
+		private static final LinkedList<Integer> allFrames = new LinkedList<>(GameType.TENPIN.allPins());
 		
 		private List<Frame> frames = new LinkedList<>();;
 		private Player player;
