@@ -1,13 +1,11 @@
 package bowling;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import bowling.frame.Ball;
 import bowling.frame.Frame;
+import bowling.frame.Roll;
 import bowling.game.Game;
 import bowling.repository.GameRepository;
 
@@ -25,9 +23,10 @@ public class DatabaseLoader implements CommandLineRunner {
 	public void run(String... strings) throws Exception {
 		Game game = new Game();
 		Frame frame = new Frame();
-		Ball ball = new Ball();
-		ball.getPinsRemaining().addAll(Arrays.asList(1,3,4,5));
-		frame.addBall(ball);
+		frame.setNumber(1);
+		Roll roll = new Roll();
+		roll.setPins(5);
+		frame.addRoll(roll);
 		game.addFrame(frame);
 		this.repository.save(game);
 	}

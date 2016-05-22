@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import bowling.frame.Ball;
+import bowling.frame.Roll;
 import bowling.frame.Frame;
 import bowling.game.Game;
 import bowling.game.GameType;
@@ -55,7 +55,7 @@ public class TestBuilders {
 
 	public static class FrameBuilder {
 
-		private List<Ball> balls = new LinkedList<>();
+		private List<Roll> rolls = new LinkedList<>();
 		private Integer number;
 
 		private FrameBuilder() {
@@ -65,8 +65,8 @@ public class TestBuilders {
 			return new FrameBuilder();
 		}
 
-		public FrameBuilder withBalls(Ball ... balls) {
-			this.balls.addAll(Arrays.asList(balls));
+		public FrameBuilder withRolls(Roll ... rolls) {
+			this.rolls.addAll(Arrays.asList(rolls));
 			return this;
 		}
 		
@@ -79,7 +79,7 @@ public class TestBuilders {
 		public Frame build() {
 			Frame frame = new Frame();
 			frame.setNumber(number);
-			this.balls.forEach(b -> { frame.addBall(b); b.setFrame(frame); } );
+			this.rolls.forEach(b -> { frame.addRoll(b); b.setFrame(frame); } );
 			return frame;
 		}
 		
@@ -88,56 +88,46 @@ public class TestBuilders {
 		}
 		
 		public static Frame strike(Integer frameNumber) {
-			return frame().withNumber(frameNumber).withBalls(BallBuilder.tenDown()).build();
+			return frame().withNumber(frameNumber).withRolls(RollBuilder.allDown()).build();
 		}
 		
-		public static Frame spare(Integer pinsDownFirstBall) {
-			return frame().withBalls(
-					BallBuilder.rangeRemaining(1,pinsDownFirstBall),
-					BallBuilder.rangeRemaining(pinsDownFirstBall+1,10)
-					).build();
-					
-		}
 		
 	}
 	
-	public static class BallBuilder {
+	public static class RollBuilder {
 		private static List<Integer> allPins = GameType.TENPIN.allPins();
 
-		private List<Integer> pins = new ArrayList<>();
+		private Integer pins;
 
-		private BallBuilder() {
+		private RollBuilder() {
 		}
 
-		public static BallBuilder ball() {
-			return new BallBuilder();
+		public static RollBuilder roll() {
+			return new RollBuilder();
 		}
 
-		public BallBuilder withPinsRemaining(List<Integer> pins) {
-			this.pins.addAll(pins);
+		public RollBuilder withPins(Integer pins) {
+			this.pins = pins;
 			return this;
 		}
 
-		public Ball build() {
-			Ball ball = new Ball();
-			ball.setPinsRemaining(pins);
-			return ball;
+		public Roll build() {
+			Roll roll = new Roll();
+			roll.setPins(pins);
+			return roll;
 		}
 		
-		public static Ball tenDown() 
+		public static Roll allDown() 
 		{
-			return ball().withPinsRemaining(new ArrayList<>()).build();
+			return roll().withPins(10).build();
 		}
 		
-		public static Ball someRemaining(Integer ...integers ) 
+		public static Roll someRoll(Integer pins) 
 		{
-			return ball().withPinsRemaining(Arrays.asList(integers)).build();
+			return roll().withPins(pins).build();
 		}
+
 		
-		public static Ball rangeRemaining(Integer start, Integer end ) 
-		{
-			return ball().withPinsRemaining(allPins.subList(start - 1, end - 1)).build();
-		}
 		
 	}
 }

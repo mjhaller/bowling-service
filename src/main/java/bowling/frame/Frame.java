@@ -1,6 +1,8 @@
 package bowling.frame;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -29,7 +31,7 @@ public class Frame extends AbstractEntity {
 
 	
 	@OneToMany(mappedBy = "frame", cascade = CascadeType.ALL)
-	private LinkedList<Ball> balls = new LinkedList<>();
+	private List<Roll> rolls = new LinkedList<>();
 	
 	@Enumerated(EnumType.STRING)
 	private FrameScoringState frameScoringState = FrameScoringState.INITIAL;
@@ -39,7 +41,7 @@ public class Frame extends AbstractEntity {
 	private Game game;
 
 	@Transient
-	private Integer nextBall;
+	private Integer nextRoll;
 	
 	
 	public boolean isLastFrame()
@@ -53,19 +55,19 @@ public class Frame extends AbstractEntity {
 	
 	public boolean finished()
 	{
-		return maxBalls() == getBalls().size();
+		return maxRolls() == getRolls().size();
 	}
 	
-	public boolean addBall(Ball ball)
+	public boolean addRoll(Roll roll)
 	{
-		int newSize = getBalls().size() + 1;
-		if (newSize > maxBalls())
+		int newSize = getRolls().size() + 1;
+		if (newSize > maxRolls())
 		{
-			throw new IllegalArgumentException("Maximum balls for this frame reached: " + maxBalls());			
+			throw new IllegalArgumentException("Maximum rolls for this frame reached: " + maxRolls());			
 		}
-		ball.setNumber(newSize);
-		ball.resolveMark();
-		return getBalls().add(ball);
+		roll.setNumber(newSize);
+		roll.resolveMark();
+		return getRolls().add(roll);
 	}
 	
 	
@@ -86,9 +88,9 @@ public class Frame extends AbstractEntity {
 		this.frameScoringState = context.getState();
 	}
 	
-	public int maxBalls()
+	public int maxRolls()
 	{
-		return GameType.TENPIN.maxBalls(this);
+		return GameType.TENPIN.maxRolls(this);
 	}
 	
 	public int maxPins()
@@ -109,19 +111,24 @@ public class Frame extends AbstractEntity {
 	public void setGame(Game game) {
 		this.game = game;
 	}
-	public LinkedList<Ball> getBalls() {
-		return balls;
+	public List<Roll> getRolls() {
+		return rolls;
 	}
 	
+	@Override
+	public String toString() {
+		return "Frame [number=" + number + ", frameScoringState=" + frameScoringState + "]";
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((balls == null) ? 0 : balls.hashCode());
 		result = prime * result + ((game == null) ? 0 : game.hashCode());
 		result = prime * result + ((number == null) ? 0 : number.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -131,11 +138,6 @@ public class Frame extends AbstractEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		Frame other = (Frame) obj;
-		if (balls == null) {
-			if (other.balls != null)
-				return false;
-		} else if (!balls.equals(other.balls))
-			return false;
 		if (game == null) {
 			if (other.game != null)
 				return false;
@@ -147,12 +149,6 @@ public class Frame extends AbstractEntity {
 		} else if (!number.equals(other.number))
 			return false;
 		return true;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Frame [number=" + number + ", frameScoringState=" + frameScoringState + "]";
 	}
 
 }

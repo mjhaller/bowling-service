@@ -3,35 +3,29 @@ package bowling.frame;
 import java.util.Iterator;
 
 public class FrameScoringContext {
-	private FrameScoringState state;
-	private Iterator<Ball> balls;
+	private FrameScoringState scoringState;
+	private Iterator<Roll> rolls;
 	private Integer score = null;
-	private boolean lastFrame;
 
-	public FrameScoringContext(FrameScoringState state, Iterator<Ball> balls, boolean lastFrame) {
+	public FrameScoringContext(FrameScoringState state, Iterator<Roll> rolls) {
 		super();
-		this.state = state;
-		this.balls = balls;
-		this.lastFrame = lastFrame;
+		this.scoringState = state;
+		this.rolls = rolls;
 	}
 
-	public boolean isLastFrame() {
-		return lastFrame;
-	}
-
-	public Ball nextBall() {
-		if (balls.hasNext()) {
-			return balls.next();
+	public Roll nextRoll() {
+		if (rolls.hasNext()) {
+			return rolls.next();
 		}
 		return null;
 	}
 
 	public FrameScoringState getState() {
-		return state;
+		return scoringState;
 	}
 
 	public void setState(FrameScoringState state) {
-		this.state = state;
+		this.scoringState = state;
 	}
 
 	public void addScore(Integer score) {

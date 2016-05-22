@@ -16,7 +16,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import bowling.AbstractEntity;
 import bowling.Loggable;
-import bowling.frame.Ball;
+import bowling.frame.Roll;
 import bowling.frame.Frame;
 import bowling.frame.FrameScoringContext;
 import bowling.frame.FrameScoringState;
@@ -28,7 +28,7 @@ public class Game extends AbstractEntity implements Loggable {
 	private GameType gameType = GameType.TENPIN;
 	
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-	private LinkedList<Frame> frames = new LinkedList<>();
+	private List<Frame> frames = new ArrayList<>();
 	
 	@ManyToOne
 	@RestResource(exported = false)
@@ -38,63 +38,113 @@ public class Game extends AbstractEntity implements Loggable {
 	private Integer totalScore = 0;
 	
 	@Transient
-	private Frame nextFrame;
+	private Integer nextFrame;
 	
+	@Enumerated(EnumType.STRING)
+	private GameState gameState = GameState.INITIAL;
 
-	public Frame getNextFrame()
-	{
-		return this.nextFrame;
-	}
 	
-	public void setNextFrame()
-	{
-		Frame last = getFrames().peekLast();
-		this.nextFrame = last; 
-		if (last == null || (last.getFrameScoringState().isPlayNextFrame() && !last.isLastFrame()))
-		{
-			Frame frame = new Frame();
-			frame.setGame(this);
-			frame.setNumber(last == null ? 1 : last.getNumber() + 1);
-			this.nextFrame = frame;
-			return;
-		}
-		if (last.isLastFrame())
-		{
-			if (last.finished())
-			{
-				this.nextFrame = null;
+	
+	private void initializeFrames() {
+		if (frames.isEmpty()) {
+			for (int i = 0; i < gameType.maxFrames(); i++) {
+				frames.add(new Frame());
 			}
 		}
 	}
 	
 	
-	public void resolveStates()
+	public static class GameContext
 	{
-		LinkedList<Ball> allBalls = new LinkedList<>(); 
-		for (Frame frame : getFrames())
-		{
-			allBalls.addAll(frame.getBalls());
+		GameState gameState;
+		List<Frame> frames;
+		Integer nextFrame;
+		
+		public GameContext(GameState gameState, List<Frame> list) {
+			super();
+			this.gameState = gameState;
+			this.frames = list;
 		}
+
+		public Integer getNextFrame() {
+			return nextFrame;
+		}
+
+		public void setNextFrame(Integer nextFrame) {
+			this.nextFrame = nextFrame;
+		}
+
+		public GameState getGameState() {
+			return gameState;
+		}
+
+		public void setGameState(GameState gameState) {
+			this.gameState = gameState;
+		}
+
+		public LinkedList<Frame> getFrames() {
+			return new LinkedList<Frame>(frames);
+		}
+	}
+	
+	public void setNextFrame(Integer nextFrame)
+	{
+		this.nextFrame = nextFrame;
+	}
+	
+	public Integer getNextFrame() {
+		return this.nextFrame;
+	}
+	
+	
+	public void score()
+	{
+		LinkedList<Roll> allRolls = allRolls();
+		
 		
 		this.totalScore = 0;
 		for (Frame frame : getFrames())
 		{
-			log().info(frame.toString());
-			List<Ball> remainingBalls = new ArrayList<>();
-			for (Ball ball : allBalls)
-			{
-				if (ball.getFrame().getNumber() >= frame.getNumber())
-				{
-					remainingBalls.add(ball);
-				}
-			}
-			frame.resolveState(new FrameScoringContext(FrameScoringState.INITIAL,remainingBalls.iterator(), frame.isLastFrame()));
+			List<Roll> remainingRolls = rollsRemaining(allRolls, frame);
+			frame.resolveState(new FrameScoringContext(FrameScoringState.INITIAL,remainingRolls.iterator()));
 			if (frame.getFrameScoringState() == FrameScoringState.RESOLVED) 
 			{
 				this.totalScore += frame.getFrameScore(); 
 			}
 		}
-		setNextFrame();
+		resolveState();
+	}
+
+
+	private LinkedList<Roll> allRolls() {
+		LinkedList<Roll> allRolls = new LinkedList<>(); 
+		for (Frame frame : getFrames())
+		{
+			allRolls.addAll(frame.getRolls());
+		}
+		return allRolls;
+	}
+
+
+	private List<Roll> rollsRemaining(LinkedList<Roll> allRolls, Frame frame) {
+		List<Roll> remainingRolls = new ArrayList<>();
+		for (Roll roll : allRolls)
+		{
+			if (roll.getFrame().getNumber() >= frame.getNumber())
+			{
+				remainingRolls.add(roll);
+			}
+		}
+		return remainingRolls;
+	}
+
+
+	private void resolveState() {
+		GameContext context = new GameContext(getGameState(),getFrames());
+		getGameState().resolve(context);
+		setGameState(context.getGameState());
+		setNextFrame(context.getNextFrame());
+		log().info(this.toString());
 	}
 	
 	public boolean addFrame(Frame frame)
@@ -106,7 +156,7 @@ public class Game extends AbstractEntity implements Loggable {
 		}
 		return false;
 	}
-
+	
 	public Player getPlayer() {
 		return player;
 	}
@@ -123,11 +173,36 @@ public class Game extends AbstractEntity implements Loggable {
 		this.gameType = gameType;
 	}
 
-	public LinkedList<Frame> getFrames() {
+	public List<Frame> getFrames() {
 		return frames;
 	}
 
 	public Integer getTotalScore() {
 		return totalScore;
 	}
+
+
+	public GameState getGameState() {
+		return gameState;
+	}
+
+
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+
+
+	public void setTotalScore(Integer totalScore) {
+		this.totalScore = totalScore;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Game [totalScore=" + totalScore + ", nextFrame=" + nextFrame + ", gameState=" + gameState + "]";
+	}
+
+
+	
+	
 }

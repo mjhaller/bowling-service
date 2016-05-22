@@ -7,7 +7,7 @@ public enum GameType implements ScoringStrategy {
 	TENPIN {
 
 		@Override
-		public int maxBalls(Frame frame) {
+		public int maxRolls(Frame frame) {
 			if (frame.getNumber() == 10)
 			{
 				return 3;
@@ -19,7 +19,7 @@ public enum GameType implements ScoringStrategy {
 	FIVEPIN {
 
 		@Override
-		public int maxBalls(Frame frame) {
+		public int maxRolls(Frame frame) {
 			throw new IllegalArgumentException("Unimplemented");
 		}
 		

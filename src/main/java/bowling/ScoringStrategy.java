@@ -22,6 +22,6 @@ public interface ScoringStrategy {
 	};
 
 	
-	public int maxBalls(Frame frame);
+	public int maxRolls(Frame frame);
 
 }
