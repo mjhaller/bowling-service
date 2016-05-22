@@ -6,9 +6,6 @@ import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import bowling.AbstractEntity;
 import bowling.game.GameType;
@@ -24,7 +21,6 @@ public class Ball extends AbstractEntity {
 	private Mark mark;
 	
 	@ManyToOne
-	@RestResource(exported = false)
 	private Frame frame;
 	
 	public int score(){
@@ -37,16 +33,33 @@ public class Ball extends AbstractEntity {
 	
 	public void resolveMark()
 	{
-		if (getNumber() ==1 && pinsRemaining.size() == 0)
-		{
-			setMark(Mark.STRIKE);
-			return;
-		}
-		
-		if (getNumber() ==2 && pinsRemaining.size() == 0)
-		{
-			setMark(Mark.SPARE);
-			return;
+		if (pinsRemaining.size() == 0) {
+			if (getNumber() == 1) {
+				setMark(Mark.STRIKE);
+				return;
+			}
+
+			if (!frame.isLastFrame())
+			{
+				if (getNumber() == 2) {
+					setMark(Mark.SPARE);
+					return;
+				}
+			}
+			else
+			{
+				if (getNumber() >= 2) {
+					if (score() == GameType.TENPIN.maxPins())
+					{
+						setMark(Mark.STRIKE_LAST);
+					}
+					if (frame.getBalls().peekFirst().score() < GameType.TENPIN.maxPins())
+					{
+						setMark(Mark.SPARE);						
+					}
+					return;
+				}
+			}
 		}
 		setMark(Mark.OPEN);
 	}

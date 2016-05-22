@@ -1,8 +1,6 @@
 package bowling.frame;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -34,7 +32,7 @@ public class Frame extends AbstractEntity {
 	private LinkedList<Ball> balls = new LinkedList<>();
 	
 	@Enumerated(EnumType.STRING)
-	private FrameState frameState = FrameState.INITIAL;
+	private FrameScoringState frameScoringState = FrameScoringState.INITIAL;
 	
 	@ManyToOne 
 	@RestResource(exported = false)
@@ -81,71 +79,11 @@ public class Frame extends AbstractEntity {
 		return frameScore;
 	}
 	
-	public static class FrameContext
-	{
-		private FrameState state;
-		private Iterator<Ball> balls;
-		private Integer score = null;
-		private Integer nextBallToPlay;
-		private boolean lastFrame;
-		
-		public FrameContext(FrameState state, Iterator<Ball> balls, boolean lastFrame) {
-			super();
-			this.state = state;
-			this.balls = balls;
-			this.lastFrame = lastFrame;
-		}
-		
-		public boolean isLastFrame()
-		{
-			return lastFrame;
-		}
-		
-		public Integer getNextBallToPlay()
-		{
-			return this.nextBallToPlay;
-		}
-		public void setNextBallToPlay(Integer nextBallToPlay)
-		{
-			this.nextBallToPlay = nextBallToPlay;
-		}
-		
-		public Ball nextBall()
-		{
-			if (balls.hasNext())
-			{
-				return balls.next();
-			}
-			return null;
-		}
-		
-		public FrameState getState() {
-			return state;
-		}
-
-		public void setState(FrameState state) {
-			this.state = state;
-		}
-
-		public void addScore(Integer score) {
-			if (this.score == null)
-			{
-				this.score = 0;
-			}
-			this.score += score;
-		}				
-		
-		public Integer getScore() {
-			return score;
-		}
-	}
-	
-	public void resolveState(FrameContext context)
+	public void resolveState(FrameScoringContext context)
 	{
 		while (context.getState().calculate(context));
 		this.frameScore = context.getScore();
-		this.frameState = context.getState();
-		this.nextBall = context.getNextBallToPlay();
+		this.frameScoringState = context.getState();
 	}
 	
 	public int maxBalls()
@@ -158,13 +96,12 @@ public class Frame extends AbstractEntity {
 		return GameType.TENPIN.maxPins();
 	}
 	
-	
 	//////////////////YAY JAVA!////////////////////
-	public FrameState getFrameState() {
-		return frameState;
+	public FrameScoringState getFrameScoringState() {
+		return frameScoringState;
 	}
-	public void setFrameState(FrameState frameState) {
-		this.frameState = frameState;
+	public void setFrameScoringState(FrameScoringState frameScoringState) {
+		this.frameScoringState = frameScoringState;
 	}
 	public Game getGame() {
 		return game;
@@ -172,7 +109,7 @@ public class Frame extends AbstractEntity {
 	public void setGame(Game game) {
 		this.game = game;
 	}
-	public List<Ball> getBalls() {
+	public LinkedList<Ball> getBalls() {
 		return balls;
 	}
 	
@@ -215,7 +152,7 @@ public class Frame extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return "Frame [number=" + number + ", frameState=" + frameState + "]";
+		return "Frame [number=" + number + ", frameScoringState=" + frameScoringState + "]";
 	}
 
 }

@@ -4,7 +4,8 @@ public enum Mark {
 	
 	OPEN(""),
 	SPARE("/"),
-	STRIKE("X");
+	STRIKE("X"),
+	STRIKE_LAST("X");
 
 	String mark;
 	

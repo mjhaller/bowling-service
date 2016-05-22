@@ -1,13 +1,12 @@
 package bowling.frame;
 
 import bowling.Loggable;
-import bowling.frame.Frame.FrameContext;
 
 public interface FrameScoring extends Loggable {
 
-	boolean calculate(FrameContext context);
+	boolean calculate(FrameScoringContext context);
 	
-	default boolean checkNextAndTransition(FrameContext context, FrameState newState) {
+	default boolean checkNextAndTransition(FrameScoringContext context, FrameScoringState newState) {
 		Ball nextBall = context.nextBall();
 		if (nextBall == null) {
 			return false;

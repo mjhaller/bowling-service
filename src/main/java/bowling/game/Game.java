@@ -18,8 +18,8 @@ import bowling.AbstractEntity;
 import bowling.Loggable;
 import bowling.frame.Ball;
 import bowling.frame.Frame;
-import bowling.frame.Frame.FrameContext;
-import bowling.frame.FrameState;
+import bowling.frame.FrameScoringContext;
+import bowling.frame.FrameScoringState;
 
 @Entity
 public class Game extends AbstractEntity implements Loggable {
@@ -50,7 +50,7 @@ public class Game extends AbstractEntity implements Loggable {
 	{
 		Frame last = getFrames().peekLast();
 		this.nextFrame = last; 
-		if (last == null || (last.getFrameState().isPlayNextFrame() && !last.isLastFrame()))
+		if (last == null || (last.getFrameScoringState().isPlayNextFrame() && !last.isLastFrame()))
 		{
 			Frame frame = new Frame();
 			frame.setGame(this);
@@ -88,8 +88,8 @@ public class Game extends AbstractEntity implements Loggable {
 					remainingBalls.add(ball);
 				}
 			}
-			frame.resolveState(new FrameContext(FrameState.INITIAL,remainingBalls.iterator(), frame.isLastFrame()));
-			if (frame.getFrameState() == FrameState.RESOLVED) 
+			frame.resolveState(new FrameScoringContext(FrameScoringState.INITIAL,remainingBalls.iterator(), frame.isLastFrame()));
+			if (frame.getFrameScoringState() == FrameScoringState.RESOLVED) 
 			{
 				this.totalScore += frame.getFrameScore(); 
 			}
