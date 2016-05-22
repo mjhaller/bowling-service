@@ -7,30 +7,20 @@ public enum GameType implements ScoringStrategy {
 	TENPIN {
 
 		@Override
-		public int maxFrames() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
 		public int maxBalls(Frame frame) {
-			// TODO Auto-generated method stub
-			return 0;
+			if (frame.getNumber() == 10)
+			{
+				return 3;
+			}
+			return 2;
 		}
 		
 	},
 	FIVEPIN {
 
 		@Override
-		public int maxFrames() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
 		public int maxBalls(Frame frame) {
-			// TODO Auto-generated method stub
-			return 0;
+			throw new IllegalArgumentException("Unimplemented");
 		}
 		
 	};

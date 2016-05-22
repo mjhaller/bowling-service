@@ -2,6 +2,7 @@ package bowling.frame;
 
 public enum Mark {
 	
+	OPEN(""),
 	SPARE("/"),
 	STRIKE("X");
 

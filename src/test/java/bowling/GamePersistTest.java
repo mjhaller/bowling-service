@@ -12,6 +12,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import bowling.TestBuilders.GameBuilder;
 import bowling.frame.Frame;
 import bowling.game.Game;
 import bowling.game.Player;
@@ -21,7 +22,7 @@ import bowling.repository.PlayerRepository;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BowlingServiceApplication.class)
 @WebAppConfiguration
-public class GameTest {
+public class GamePersistTest {
 
 	@Resource private GameRepository gameRepository;
 	@Resource private PlayerRepository playerRepository;
@@ -39,14 +40,14 @@ public class GameTest {
 		Frame frame2 = new Frame();
 		frame2.setNumber(1); 
 
-		game.addToFrames(frame1);
-		game.addToFrames(frame2);
+		game.addFrame(frame1);
+		game.addFrame(frame2);
 		
 		assertThat(game.getFrames(),hasSize(1));
 		
 		frame2  = new Frame();
 		frame2.setNumber(2);
-		game.addToFrames(frame2);
+		game.addFrame(frame2);
 		
 		assertThat(game.getFrames(),hasSize(2));
 		
@@ -54,6 +55,16 @@ public class GameTest {
 		
 		assertThat(gameRepository.findOne(game.getId()),notNullValue());
 		
+	}
+	
+	@Test
+	public void perfectGameSave()
+	{
+		Game game = gameRepository.save(GameBuilder.perfectGame());
+		
+		Game actualGame = gameRepository.findOne(game.getId());
+		assertThat(actualGame,notNullValue());
+		assertThat(actualGame.getFrames(),hasSize(10));
 	}
 
 }
