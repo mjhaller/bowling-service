@@ -1,13 +1,12 @@
 package bowling;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import bowling.frame.Roll;
 import bowling.frame.Frame;
+import bowling.frame.Roll;
 import bowling.game.Game;
 import bowling.game.GameType;
 import bowling.game.Player;
@@ -95,7 +94,6 @@ public class TestBuilders {
 	}
 	
 	public static class RollBuilder {
-		private static List<Integer> allPins = GameType.TENPIN.allPins();
 
 		private Integer pins;
 

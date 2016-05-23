@@ -4,22 +4,22 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import java.util.stream.IntStream;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import bowling.game.Game;
 
-public class PlayingTest implements Loggable {
+public class PlayingTest implements Loggable, GameTester {
 
-	private Game game;
+	Game game;
 	
 	@Before
 	public void setup()
 	{
 		this.game = new Game();
 	}
+	
+	public Game game(){ return this.game; }
 	
 	@Test
 	public void perfect()
@@ -90,20 +90,6 @@ public class PlayingTest implements Loggable {
 		assertThat(game.score(), equalTo(138));
 		roll(10);
 		assertThat(game.score(), equalTo(158));
-	}
-	
-	
-	private void roll(Integer ... rolls)
-	{
-		for (Integer pins : rolls)
-		{
-			game.roll(pins);
-		}
-	}
-	
-	private void addRangeOfRolls(Integer numberOfRolls, Integer pinsPerRoll)
-	{
-		IntStream.range(1, numberOfRolls + 1).forEach(i -> game.roll(pinsPerRoll));		
 	}
 	
 	
