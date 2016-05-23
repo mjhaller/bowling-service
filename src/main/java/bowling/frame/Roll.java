@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import bowling.AbstractEntity;
-import bowling.game.GameType;
 
 @Entity
 public class Roll extends AbstractEntity {
@@ -13,7 +12,7 @@ public class Roll extends AbstractEntity {
 	
 	private Integer pins;
 	
-	private Mark mark;
+	private Mark mark = Mark.OPEN;
 	
 	@ManyToOne
 	private Frame frame;
@@ -23,20 +22,6 @@ public class Roll extends AbstractEntity {
 		return mark;
 	}
 	
-	public void resolveMark() {
-		if (getNumber() == 1 && this.getPins() == GameType.TENPIN.maxPins() ) {
-			setMark(Mark.STRIKE);
-			return;
-		}
-		Integer combinedRolls = frame.getRolls().get(0).getPins() + getPins();
-		if (getNumber() == 2 && combinedRolls == GameType.TENPIN.maxPins())
-		{
-			setMark(Mark.SPARE);
-			return;
-		}
-		setMark(Mark.OPEN);
-	}
-
 	public void setMark(Mark mark) {
 		this.mark = mark;
 	}

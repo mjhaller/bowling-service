@@ -1,6 +1,5 @@
 package bowling.frame;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class Frame extends AbstractEntity {
 	private Integer number;
 
 	@Transient
-	private Integer frameScore;
+	private Integer frameScore = null;
 	
 	@Transient
 	private Integer runningScore;
@@ -44,6 +43,45 @@ public class Frame extends AbstractEntity {
 	private Integer nextRoll;
 	
 	
+	public Integer naturalFrameScore()
+	{
+		return this.rollOne().getPins() + (this.rollTwo() == null ? 0 : this.rollTwo().getPins());
+	}
+	
+	public Roll rollOne()
+	{
+		return getRoll(0);
+	}
+	
+	public Roll  rollTwo()
+	{
+		return getRoll(1);
+	}
+	
+	public Roll rollBonus()
+	{
+		return getRoll(2);
+	}
+
+	public Roll getRoll(int index)
+	{
+		if (this.getRolls().size() > index)
+		{
+			return this.getRolls().get(index);
+		}
+		return null;
+	}
+
+	
+	public Frame(Integer number) {
+		super();
+		this.number = number;
+	}
+	
+	public Frame() {
+		super();
+	}
+
 	public boolean isLastFrame()
 	{
 		if (GameType.TENPIN.maxFrames() == getNumber())
@@ -60,13 +98,7 @@ public class Frame extends AbstractEntity {
 	
 	public boolean addRoll(Roll roll)
 	{
-		int newSize = getRolls().size() + 1;
-		if (newSize > maxRolls())
-		{
-			throw new IllegalArgumentException("Maximum rolls for this frame reached: " + maxRolls());			
-		}
-		roll.setNumber(newSize);
-		roll.resolveMark();
+		roll.setFrame(this);
 		return getRolls().add(roll);
 	}
 	
@@ -98,13 +130,6 @@ public class Frame extends AbstractEntity {
 		return GameType.TENPIN.maxPins();
 	}
 	
-	//////////////////YAY JAVA!////////////////////
-	public FrameScoringState getFrameScoringState() {
-		return frameScoringState;
-	}
-	public void setFrameScoringState(FrameScoringState frameScoringState) {
-		this.frameScoringState = frameScoringState;
-	}
 	public Game getGame() {
 		return game;
 	}
@@ -115,40 +140,61 @@ public class Frame extends AbstractEntity {
 		return rolls;
 	}
 	
+	public void setFrameScore(Integer frameScore) {
+		this.frameScore = frameScore;
+	}
+	
+	public void setFrameScore(Roll... futureRolls) {
+		// just add them up if on the last frame
+		if (isLastFrame()) {
+			this.frameScore = null;
+			if (rollBonus() != null)
+			{
+				this.frameScore = naturalFrameScore() + rollBonus().getPins();	
+			}
+			return;
+		}
+		this.frameScore = naturalFrameScore();
+		for (Roll roll : futureRolls) {
+			if (roll == null) {
+				this.frameScore = null;
+				return;
+			} else {
+				this.frameScore += roll.getPins();
+			}
+		}
+	}
+	
+	public boolean canAdd()
+	{
+		if ( lastFrameAddable())
+		{
+			return true;
+		}
+		return !(isOpen() || isStrike() || isSpare()); 
+	}
+
+	public boolean lastFrameAddable() {
+		return isLastFrame() && this.getRolls().size() < 3;
+	}
+
+	public boolean isOpen() {
+		return getRolls().size() == 2 && naturalFrameScore() < 10;
+	}
+
+	public boolean isStrike() {
+		return  getRolls().size() > 0 && rollOne().getPins() == 10 ;
+	}
+
+	public boolean isSpare() {
+		return !(getRolls().size() < 2) && naturalFrameScore() == 10;
+	}
+
 	@Override
 	public String toString() {
-		return "Frame [number=" + number + ", frameScoringState=" + frameScoringState + "]";
+		return "Frame [number=" + number + ", frameScore=" + frameScore + ", rolls.size()=" + rolls.size() + "]";
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((game == null) ? 0 : game.hashCode());
-		result = prime * result + ((number == null) ? 0 : number.hashCode());
-		return result;
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Frame other = (Frame) obj;
-		if (game == null) {
-			if (other.game != null)
-				return false;
-		} else if (!game.equals(other.game))
-			return false;
-		if (number == null) {
-			if (other.number != null)
-				return false;
-		} else if (!number.equals(other.number))
-			return false;
-		return true;
-	}
 
 }

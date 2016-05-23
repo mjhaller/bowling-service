@@ -32,29 +32,11 @@ public class GamePersistTest {
 		Game game = new Game();
 		Player player = new Player();
 		playerRepository.save(player);
+		
 		game.setPlayer(player);
-		
-		Frame frame1 = new Frame();
-		frame1.setNumber(1);
-		
-		Frame frame2 = new Frame();
-		frame2.setNumber(1); 
-
-		game.addFrame(frame1);
-		game.addFrame(frame2);
-		
-		assertThat(game.getFrames(),hasSize(1));
-		
-		frame2  = new Frame();
-		frame2.setNumber(2);
-		game.addFrame(frame2);
-		
-		assertThat(game.getFrames(),hasSize(2));
-		
+		assertThat(game.getFrames(),hasSize(10));
 		game = gameRepository.save(game);
-		
 		assertThat(gameRepository.findOne(game.getId()),notNullValue());
-		
 	}
 	
 	@Test
@@ -64,7 +46,7 @@ public class GamePersistTest {
 		
 		Game actualGame = gameRepository.findOne(game.getId());
 		assertThat(actualGame,notNullValue());
-		//assertThat(actualGame.getFrames(),hasSize(10));
+		assertThat(actualGame.getFrames(),hasSize(10));
 	}
 
 }
