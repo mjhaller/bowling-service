@@ -35,15 +35,17 @@ $ mvn spring-boot:run
 In another terminal: 
 ```
 $ curl -H "Content-type: application/json" -d '{ "player" : "mark" }' -X POST localhost:8090/game
+(repeat to start a new game)
 $ curl -H "Content-type: application/json" -d '{ "pins" : 10 }' -X POST localhost:8090/game/1/roll
-(repeat rolling until finished)
+(repeat rolling until frame ten is complete)
 ```
 
 # Model
 
-see
+see [Class Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_class_diagram.png?raw=true)
 
 
 # Sequence 
 
-see 
+see [Sequence Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_sequence_diagram.png?raw=true)
+Note: Did not implement the BowlingService, but would consider that the right design if persistence was implemented
