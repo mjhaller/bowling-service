@@ -31,10 +31,6 @@ public class Game extends AbstractEntity implements Loggable {
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Frame> frames = new ArrayList<>();
 	
-	@Transient
-	private List<Roll> rolls = new ArrayList<>();
-
-	
 	@ManyToOne
 	@RestResource(exported = false)
 	private Player player;
@@ -61,7 +57,7 @@ public class Game extends AbstractEntity implements Loggable {
 	 * Calculates the score of each frame (null score indicates the frame is not scorable) 
 	 * as well as the total score of the game
 	 * 
-	 * TODO: currently score iterates through all frames - add frame state (lastScorableFrame) to reduce that 
+	 * TODO: currently score iterates through all frames - add frame state (lastScorableFrame?) to reduce that 
 	 * @return
 	 */
 	public Integer score()
@@ -70,14 +66,14 @@ public class Game extends AbstractEntity implements Loggable {
 		for (Frame frame : getFrames())
 		{
 			frame.setFrameScore(0);
-			LinkedList<Roll> futureRolls = getRolls(frame.getNumber()+1);
+			LinkedList<Roll> futureRolls = getNextRolls(frame.getNumber());
 			if (frame.isSpare())
 			{
-				frame.setFrameScore(futureRolls.pollFirst());
+				frame.score(futureRolls.pollFirst());
 			}
 			if (frame.isStrike())
 			{
-				frame.setFrameScore(futureRolls.pollFirst(),futureRolls.pollFirst());
+				frame.score(futureRolls.pollFirst(),futureRolls.pollFirst());
 			}
 			if (frame.isOpen())
 			{
@@ -120,8 +116,16 @@ public class Game extends AbstractEntity implements Loggable {
 		}
 	}
 
-	private LinkedList<Roll> getRolls(int frameNumber) {
+	/**
+	 * In order to score a frame with a mark (spare/strike) you need to look ahead to the next rolls
+	 * and this method returns those next rolls.
+	 * 
+	 * @param frameNumber - this is the frame you are scoring
+	 * @return
+	 */
+	private LinkedList<Roll> getNextRolls(int frameNumber) {
 		LinkedList<Roll> rolls = new LinkedList<>();
+		frameNumber++; // get the frames after the scoring frame
 		while (rolls.size() < 2)
 		{
 			if (frameNumber > getFrames().size()) {

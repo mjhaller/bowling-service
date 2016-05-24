@@ -8,9 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
-import org.springframework.data.rest.core.annotation.RestResource;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import bowling.AbstractEntity;
 import bowling.game.Game;
@@ -21,15 +20,14 @@ public class Frame extends AbstractEntity {
 	
 	private Integer number;
 
-	@Transient
 	private Integer frameScore = null;
 	
 	//TODO: move eager fetchtype out of here and configure that at the repository level
 	@OneToMany(mappedBy = "frame", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
 	private List<Roll> rolls = new LinkedList<>();
 	
-	@ManyToOne 
-	@RestResource(exported = false)
+	@ManyToOne
+	@JsonIgnore
 	private Game game;
 
 	public Frame(Integer number) {
@@ -70,6 +68,7 @@ public class Frame extends AbstractEntity {
 		return null;
 	}
 
+	@JsonIgnore
 	public boolean isLastFrame()
 	{
 		if (GameType.TENPIN.maxFrames() == getNumber())
@@ -80,12 +79,12 @@ public class Frame extends AbstractEntity {
 	}
 	
 	/**
-	 *  Bonus setter!
-	 *  
 	 *  Calculates and set the frame score based on the status of future rolls
-	 *  a null score indicates the frame is not yet scorable
+	 *  a null score indicates the frame is not yet scoreable
+	 *  
+	 * @param futureRolls - 0-2 future rolls to add to the existing score
 	 */
-	public void setFrameScore(Roll... futureRolls) {
+	public void score(Roll... futureRolls) {
 		// just add them up if on the last frame
 		if (isLastFrame()) {
 			this.frameScore = null;
@@ -100,9 +99,8 @@ public class Frame extends AbstractEntity {
 			if (roll == null) {
 				this.frameScore = null;
 				return;
-			} else {
-				this.frameScore += roll.getPins();
-			}
+			} 
+			this.frameScore += roll.getPins();
 		}
 	}
 	
@@ -119,14 +117,17 @@ public class Frame extends AbstractEntity {
 		return isLastFrame() && this.getRolls().size() < 3;
 	}
 
+	@JsonIgnore
 	public boolean isOpen() {
 		return getRolls().size() == 2 && naturalFrameScore() < 10;
 	}
 
+	@JsonIgnore
 	public boolean isStrike() {
 		return  getRolls().size() > 0 && rollOne().getPins() == 10 ;
 	}
 
+	@JsonIgnore
 	public boolean isSpare() {
 		return !(getRolls().size() < 2) && naturalFrameScore() == 10;
 	}
@@ -139,7 +140,7 @@ public class Frame extends AbstractEntity {
 	
 	public boolean addRoll(Roll roll)
 	{
-		//roll.setFrame(this);
+		roll.setFrame(this);
 		return getRolls().add(roll);
 	}
 	

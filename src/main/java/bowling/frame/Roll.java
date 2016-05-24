@@ -3,18 +3,19 @@ package bowling.frame;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import bowling.AbstractEntity;
 
 @Entity
 public class Roll extends AbstractEntity {
-	
-	private Integer number;
 	
 	private Integer pins;
 	
 	private Mark mark = Mark.OPEN;
 	
 	@ManyToOne
+	@JsonIgnore
 	private Frame frame;
 	
 	
@@ -34,13 +35,6 @@ public class Roll extends AbstractEntity {
 		this.frame = frame;
 	}
 
-	public Integer getNumber() {
-		return number;
-	}
-
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
 
 	@Override
 	public String toString() {
