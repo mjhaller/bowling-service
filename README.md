@@ -14,7 +14,7 @@ Basic REST API
 You need to install 
 
 - [Java](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- [Maven]|(https://maven.apache.org/download.cgi)
+- [Maven|(https://maven.apache.org/download.cgi)
 
 on mac:
 
@@ -27,14 +27,16 @@ Clone this repo (of course)
 # Playing
 
 ## Run
+```
 $ mvn spring-boot:run
-
+```
 ## Roll
-In another terminal: 
 
+In another terminal: 
+```
 $ curl -H "Content-type: application/json" -d '{ "player" : "mark" }' -X POST localhost:8090/game
 $ curl -H "Content-type: application/json" -d '{ "pins" : 10 }' -X POST localhost:8090/game/1/roll
-
+```
 
 # Model
 
