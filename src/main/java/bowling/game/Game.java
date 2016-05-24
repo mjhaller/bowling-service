@@ -27,6 +27,7 @@ public class Game extends AbstractEntity implements Loggable {
 	@Enumerated(EnumType.STRING)
 	private GameType gameType = GameType.TENPIN;
 	
+	//TODO: move eager to be configured per query (maybe)
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Frame> frames = new ArrayList<>();
 	
@@ -41,11 +42,9 @@ public class Game extends AbstractEntity implements Loggable {
 	@Transient
 	private Integer totalScore = 0;
 	
-	@Transient
-	private Integer nextFrame = 1;
-	
 	private void initializeFrames() {
-		if (frames.isEmpty()) {
+		if (getFrames().isEmpty()) {
+			frames = new ArrayList<>();
 			for (int i = 0; i < gameType.maxFrames(); i++) {
 				Frame frame = new Frame(i + 1);
 				frame.setGame(this);
@@ -54,41 +53,52 @@ public class Game extends AbstractEntity implements Loggable {
 		}
 	}
 	
-	
 	public Game(){
 		initializeFrames();
 	}
 	
+	/**
+	 * Calculates the score of each frame (null score indicates the frame is not scorable) 
+	 * as well as the total score of the game
+	 * 
+	 * TODO: currently score iterates through all frames - add frame state (lastScorableFrame) to reduce that 
+	 * @return
+	 */
 	public Integer score()
 	{
-		LinkedList<Roll> allRolls = allRolls();
 		this.totalScore = 0;
 		for (Frame frame : getFrames())
 		{
 			frame.setFrameScore(0);
-			LinkedList<Roll> remainingRolls = rollsRemaining(allRolls, frame);
+			LinkedList<Roll> futureRolls = getRolls(frame.getNumber()+1);
 			if (frame.isSpare())
 			{
-				frame.setFrameScore(remainingRolls.pollFirst());
+				frame.setFrameScore(futureRolls.pollFirst());
 			}
 			if (frame.isStrike())
 			{
-				frame.setFrameScore(remainingRolls.pollFirst(),remainingRolls.pollFirst());
+				frame.setFrameScore(futureRolls.pollFirst(),futureRolls.pollFirst());
 			}
 			if (frame.isOpen())
 			{
 				frame.setFrameScore(frame.naturalFrameScore());
 			}
-			log().debug("Scoring : " + frame.toString());
+			log().info("Scoring : " + frame.toString() );
 			if (frame.getFrameScore() != null)
 			{
 				this.totalScore += frame.getFrameScore();
 			}
-
 		}
 		return getTotalScore();
 	}
 	
+	/**
+	 * Finds the correct frame to hold the ball, and adds the ball to it  
+	 * 
+	 * TODO: currently roll iterates through all frames - add frame state (lastClosedFrame) to reduce that
+	 * 
+	 * @param score - this is the number of pins knocked down
+	 */
 	public void roll(Integer score) {
 
 		Roll roll = new Roll();
@@ -110,38 +120,26 @@ public class Game extends AbstractEntity implements Loggable {
 		}
 	}
 
-	private LinkedList<Roll> allRolls() {
-		LinkedList<Roll> allRolls = new LinkedList<>(); 
-		for (Frame frame : getFrames())
+	private LinkedList<Roll> getRolls(int frameNumber) {
+		LinkedList<Roll> rolls = new LinkedList<>();
+		while (rolls.size() < 2)
 		{
-			allRolls.addAll(frame.getRolls());
-		}
-		return allRolls;
-	}
-
-
-	private LinkedList<Roll> rollsRemaining(LinkedList<Roll> allRolls, Frame frame) {
-		LinkedList<Roll> remainingRolls = new LinkedList<>();
-		for (Roll roll : allRolls)
-		{
-			if (roll.getFrame().getNumber() > frame.getNumber())
-			{
-				remainingRolls.add(roll);
+			if (frameNumber > getFrames().size()) {
+				return rolls;
 			}
+			List<Roll> frameRolls = getFrames().get(frameNumber-1).getRolls();
+			//TODO: there is a bug in here if there are discontinuous 
+			if (frameRolls.isEmpty())
+				return rolls;
+			rolls.addAll(frameRolls);
+			frameNumber++;
 		}
-		return remainingRolls;
+		return rolls;
 	}
 
 
-	public boolean addFrame(Frame frame)
-	{
-		if ( !getFrames().contains(frame) )
-		{
-			frame.setNumber(getFrames().size() + 1);
-			return getFrames().add(frame);
-		}
-		return false;
-	}
+	// getters, setters, convenience methods below
+
 	
 	public Player getPlayer() {
 		return player;

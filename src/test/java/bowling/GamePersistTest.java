@@ -5,6 +5,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.junit.Before;
@@ -14,7 +17,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import bowling.TestBuilders.GameBuilder;
+import bowling.frame.Frame;
+import bowling.frame.Roll;
 import bowling.game.Game;
 import bowling.game.Player;
 import bowling.repository.GameRepository;
@@ -44,34 +48,40 @@ public class GamePersistTest implements GameTester {
 		Game game = new Game();
 		Player player = new Player();
 		playerRepository.save(player);
-		
+
 		game.setPlayer(player);
-		assertThat(game.getFrames(),hasSize(10));
+		assertThat(game.getFrames(), hasSize(10));
+
+//		game.getFrames().forEach(f -> {
+//			Roll roll = new Roll();
+//			f.addRoll(roll);
+//			roll = new Roll();
+//			f.addRoll(roll);
+//		});
 		game = gameRepository.save(game);
-		assertThat(gameRepository.findOne(game.getId()),notNullValue());
+
+		Game persistedGame = gameRepository.findOne(game.getId());
+		assertThat(persistedGame, notNullValue());
+		assertThat(persistedGame.getFrames(), hasSize(10));
 	}
 	
 	@Test
 	public void perfectGameSave()
 	{
-		Game game = gameRepository.save(GameBuilder.perfectGame());
-		
-		Game actualGame = gameRepository.findOne(game.getId());
-		assertThat(actualGame,notNullValue());
-		assertThat(actualGame.getFrames(),hasSize(10));
-	}
-	
-	@Test
-	public void perfectGameSave1()
-	{
-		addRangeOfRolls(12,10);
-		assertThat(game.score(), equalTo(300));
+		assertThat(game.getFrames(),hasSize(10));
 		gameRepository.save(game);
 
-		Game actualGame = gameRepository.findOne(game.getId());
-		assertThat(actualGame,notNullValue());
-		assertThat(actualGame.getFrames(),hasSize(10));
-		assertThat(actualGame.score(), equalTo(300));
+		game = gameRepository.findOne(game.getId());
+		assertThat(game,notNullValue());
+		assertThat(game.getFrames(),hasSize(10));
+		addRangeOfRolls(21,10);
+		assertThat(game.score(), equalTo(300));
+		
+		game = gameRepository.save(game);
+		
+		game = gameRepository.findOne(game.getId());
+		assertThat(game.score(), equalTo(300));
 	}
+	
 
 }

@@ -26,6 +26,7 @@ public class PlayingTest implements Loggable, GameTester {
 	{
 		addRangeOfRolls(12,10);
 		
+		assertThat(game.getFrames().size(), equalTo(10));
 		assertThat(game.score(), equalTo(300));
 		
 	}
@@ -62,8 +63,8 @@ public class PlayingTest implements Loggable, GameTester {
 		assertThat(game.getFrames().get(1).getRolls(), hasSize(2));
 		assertThat(game.getFrames().get(2).getRolls(), hasSize(1));
 		assertThat(game.getFrames().get(3).getRolls(), hasSize(0));
-		
 		assertThat(game.score(), equalTo(40));
+		
 		roll(3,3);
 		assertThat(game.score(), equalTo(62));
 		roll(9);

@@ -44,8 +44,7 @@ public class Roll extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return "Roll [number=" + number + ", pins=" + pins + ", mark=" + mark + ", frame=" + frame.getNumber()
-				+ "]";
+		return "Roll [pins=" + pins + ", mark=" + mark + "]";
 	}
 
 

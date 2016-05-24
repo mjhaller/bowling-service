@@ -5,8 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -25,23 +24,22 @@ public class Frame extends AbstractEntity {
 	@Transient
 	private Integer frameScore = null;
 	
-	@Transient
-	private Integer runningScore;
-
-	
-	@OneToMany(mappedBy = "frame", cascade = CascadeType.ALL)
+	//TODO: move eager fetchtype out of here and configure that at the repository level
+	@OneToMany(mappedBy = "frame", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
 	private List<Roll> rolls = new LinkedList<>();
-	
-	@Enumerated(EnumType.STRING)
-	private FrameScoringState frameScoringState = FrameScoringState.INITIAL;
 	
 	@ManyToOne 
 	@RestResource(exported = false)
 	private Game game;
 
-	@Transient
-	private Integer nextRoll;
+	public Frame(Integer number) {
+		super();
+		this.number = number;
+	}
 	
+	public Frame() {
+		super();
+	}
 	
 	public Integer naturalFrameScore()
 	{
@@ -72,16 +70,6 @@ public class Frame extends AbstractEntity {
 		return null;
 	}
 
-	
-	public Frame(Integer number) {
-		super();
-		this.number = number;
-	}
-	
-	public Frame() {
-		super();
-	}
-
 	public boolean isLastFrame()
 	{
 		if (GameType.TENPIN.maxFrames() == getNumber())
@@ -91,59 +79,12 @@ public class Frame extends AbstractEntity {
 		return false;
 	}
 	
-	public boolean finished()
-	{
-		return maxRolls() == getRolls().size();
-	}
-	
-	public boolean addRoll(Roll roll)
-	{
-		roll.setFrame(this);
-		return getRolls().add(roll);
-	}
-	
-	
-	public Integer getNumber() {
-		return number;
-	}
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
-	public Integer getFrameScore() {
-		return frameScore;
-	}
-	
-	public void resolveState(FrameScoringContext context)
-	{
-		while (context.getState().calculate(context));
-		this.frameScore = context.getScore();
-		this.frameScoringState = context.getState();
-	}
-	
-	public int maxRolls()
-	{
-		return GameType.TENPIN.maxRolls(this);
-	}
-	
-	public int maxPins()
-	{
-		return GameType.TENPIN.maxPins();
-	}
-	
-	public Game getGame() {
-		return game;
-	}
-	public void setGame(Game game) {
-		this.game = game;
-	}
-	public List<Roll> getRolls() {
-		return rolls;
-	}
-	
-	public void setFrameScore(Integer frameScore) {
-		this.frameScore = frameScore;
-	}
-	
+	/**
+	 *  Bonus setter!
+	 *  
+	 *  Calculates and set the frame score based on the status of future rolls
+	 *  a null score indicates the frame is not yet scorable
+	 */
 	public void setFrameScore(Roll... futureRolls) {
 		// just add them up if on the last frame
 		if (isLastFrame()) {
@@ -189,6 +130,57 @@ public class Frame extends AbstractEntity {
 	public boolean isSpare() {
 		return !(getRolls().size() < 2) && naturalFrameScore() == 10;
 	}
+
+	
+
+	
+	// getters, setters, convenience methods below
+	
+	
+	public boolean addRoll(Roll roll)
+	{
+		//roll.setFrame(this);
+		return getRolls().add(roll);
+	}
+	
+	public void setRolls(List<Roll> rolls) {
+		this.rolls = rolls;
+	}
+
+	public Integer getNumber() {
+		return number;
+	}
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
+	public Integer getFrameScore() {
+		return frameScore;
+	}
+	
+	public int maxRolls()
+	{
+		return GameType.TENPIN.maxRolls(this);
+	}
+	
+	public int maxPins()
+	{
+		return GameType.TENPIN.maxPins();
+	}
+	
+	public Game getGame() {
+		return game;
+	}
+	public void setGame(Game game) {
+		this.game = game;
+	}
+	public List<Roll> getRolls() {
+		return rolls;
+	}
+	
+	public void setFrameScore(Integer frameScore) {
+		this.frameScore = frameScore;
+	}
+	
 
 	@Override
 	public String toString() {
