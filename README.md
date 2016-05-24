@@ -4,10 +4,10 @@ Scoring as a Service for Bowling Alleys  (SaaSBA)
 
 # Caveats
 
-In memory scoring only (no persistence)
-No UI
-No support for editing existing frames
-Basic REST API
+- In memory scoring only (no persistence)
+- No UI
+- No support for editing existing frames
+- Basic REST API
 
 # Installing
 
