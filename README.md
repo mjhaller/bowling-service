@@ -42,10 +42,10 @@ $ curl -H "Content-type: application/json" -d '{ "pins" : 10 }' -X POST localhos
 
 # Model
 
-see [Class Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_class_diagram.png?raw=true)
+- see [Class Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_class_diagram.png?raw=true)
 
 
 # Sequence 
 
-see [Sequence Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_sequence_diagram.png?raw=true)
-Note: Did not implement the BowlingService, but would consider that the right design if persistence was implemented
+- see [Sequence Diagram](https://github.com/mjhaller/bowling-service/blob/master/bowling_sequence_diagram.png?raw=true)
+-- Note: Did not implement the BowlingService, but would consider that the right design if persistence was implemented
