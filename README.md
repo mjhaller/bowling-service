@@ -14,7 +14,7 @@ Basic REST API
 You need to install 
 
 - [Java](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- [Maven|(https://maven.apache.org/download.cgi)
+- [Maven](https://maven.apache.org/download.cgi)
 
 on mac:
 
