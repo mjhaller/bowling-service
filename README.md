@@ -30,12 +30,13 @@ Clone this repo (of course)
 ```
 $ mvn spring-boot:run
 ```
-## Roll
+## Play
 
 In another terminal: 
 ```
 $ curl -H "Content-type: application/json" -d '{ "player" : "mark" }' -X POST localhost:8090/game
 $ curl -H "Content-type: application/json" -d '{ "pins" : 10 }' -X POST localhost:8090/game/1/roll
+(repeat rolling until finished)
 ```
 
 # Model
