@@ -12,6 +12,8 @@ public class Roll extends AbstractEntity {
 	
 	private Integer pins;
 	
+	@JsonIgnore
+	//unimplemented
 	private Mark mark = Mark.OPEN;
 	
 	@ManyToOne

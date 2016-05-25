@@ -85,7 +85,7 @@ public class Game extends AbstractEntity implements Loggable {
 			{
 				frame.setFrameScore(frame.naturalFrameScore());
 			}
-			log().info("Scoring : " + frame.toString() );
+			log().debug("Scoring : " + frame.toString() );
 			if (frame.getFrameScore() != null)
 			{
 				this.totalScore += frame.getFrameScore();
@@ -112,7 +112,7 @@ public class Game extends AbstractEntity implements Loggable {
 			if (currentFrame.canAdd())
 			{
 				currentFrame.addRoll(roll);
-				log().info("Added " + roll + " to " + currentFrame.toString());
+				log().debug("Added " + roll + " to " + currentFrame.toString());
 				return;
 			}
 			if (currentFrame.isOpen() || currentFrame.isStrike() || currentFrame.isSpare()) {
