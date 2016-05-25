@@ -38,6 +38,12 @@ public class Game extends AbstractEntity implements Loggable {
 	@Transient
 	private Integer totalScore = 0;
 	
+	/**
+	* This is here as a convenience so we don't have to worry about creating
+	* frames on the fly.
+	* 
+	* It also reflects the game view for a scoring card
+	*/
 	private void initializeFrames() {
 		if (getFrames().isEmpty()) {
 			frames = new ArrayList<>();
@@ -91,8 +97,8 @@ public class Game extends AbstractEntity implements Loggable {
 	/**
 	 * Finds the correct frame to hold the ball, and adds the ball to it  
 	 * 
-	 * TODO: currently roll iterates through all frames - add frame state (lastClosedFrame) to reduce that
-	 * 
+	 * TODO: currently roll iterates through all frames - take and last frame
+	 * TODO: could consider closing the game when you can't place any more balls
 	 * @param score - this is the number of pins knocked down
 	 */
 	public void roll(Integer score) {
@@ -132,7 +138,7 @@ public class Game extends AbstractEntity implements Loggable {
 				return rolls;
 			}
 			List<Roll> frameRolls = getFrames().get(frameNumber-1).getRolls();
-			//TODO: there is a bug in here if there are discontinuous 
+			//TODO: rethink the 
 			if (frameRolls.isEmpty())
 				return rolls;
 			rolls.addAll(frameRolls);
@@ -143,8 +149,6 @@ public class Game extends AbstractEntity implements Loggable {
 
 
 	// getters, setters, convenience methods below
-
-	
 	public Player getPlayer() {
 		return player;
 	}

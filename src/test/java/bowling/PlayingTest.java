@@ -39,6 +39,13 @@ public class PlayingTest implements Loggable, GameTester {
 	}
 	
 	@Test
+	public void gutterGame()
+	{
+		addRangeOfRolls(20,0);
+		assertThat(game.score(), equalTo(0));
+	}
+	
+	@Test
 	public void allFives() //spares
 	{
 		addRangeOfRolls(21,5);
