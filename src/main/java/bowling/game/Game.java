@@ -97,7 +97,6 @@ public class Game extends AbstractEntity implements Loggable {
 	/**
 	 * Finds the correct frame to hold the ball, and adds the ball to it  
 	 * 
-	 * TODO: currently roll iterates through all frames - take and last frame
 	 * TODO: could consider closing the game when you can't place any more balls
 	 * @param score - this is the number of pins knocked down
 	 */
@@ -131,14 +130,13 @@ public class Game extends AbstractEntity implements Loggable {
 	 */
 	private LinkedList<Roll> getNextRolls(int frameNumber) {
 		LinkedList<Roll> rolls = new LinkedList<>();
-		frameNumber++; // get the frames after the scoring frame
+		frameNumber++; 
 		while (rolls.size() < 2)
 		{
 			if (frameNumber > getFrames().size()) {
 				return rolls;
 			}
 			List<Roll> frameRolls = getFrames().get(frameNumber-1).getRolls();
-			//TODO: rethink the 
 			if (frameRolls.isEmpty())
 				return rolls;
 			rolls.addAll(frameRolls);
