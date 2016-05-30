@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.data.rest.core.config.Projection;
 
 import bowling.AbstractEntity;
 import bowling.Loggable;
@@ -24,7 +25,7 @@ import bowling.frame.Roll;
 @Entity
 @RestResource
 public class Game extends AbstractEntity implements Loggable {
-
+	
 	@Enumerated(EnumType.STRING)
 	private GameType gameType = GameType.TENPIN;
 	

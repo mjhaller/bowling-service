@@ -29,8 +29,6 @@ public class Frame extends AbstractEntity {
 	private List<Roll> rolls = new ArrayList<>();
 	
 	@ManyToOne
-	@JsonIgnore
-	@RestResource(exported = false)
 	private Game game;
 
 	public Frame(Integer number) {

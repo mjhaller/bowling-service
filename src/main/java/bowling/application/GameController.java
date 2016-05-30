@@ -28,6 +28,24 @@ public class GameController {
 	
 	@Autowired RepositoryEntityLinks entityLinks;
 	
+	@RequestMapping(value = "/frames/{id}/rolls", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody ResponseEntity<?> addRoll(@PathVariable Long id, @RequestBody Roll roll ) {
+		
+		Frame persistedFrame =frameRepository.findOne(id);
+		persistedFrame.addRoll(roll);
+		persistedFrame = frameRepository.save(persistedFrame);
+
+		Game game = gameRepository.findOne(persistedFrame.getGame().getId());
+		game.score();
+		gameRepository.save(game);
+		
+		Resource<Frame> resource = new Resource<Frame>(persistedFrame);
+		resource.add(entityLinks.linkToSingleResource(Game.class, game.getId()));
+		resource.add(entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame"));
+
+		return ResponseEntity.ok(resource);
+	}
 	
 	@RequestMapping(value = "/frames/{id}", method = RequestMethod.PUT)
 	@Transactional
@@ -58,8 +76,8 @@ public class GameController {
 			return ResponseEntity.notFound().build();
 		}
 		Resource<Game> resource = new Resource<Game>(game);
-		Link link = entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame");
-		resource.add(link);
+		resource.add(entityLinks.linkToCollectionResource(Frame.class));
+		resource.add(entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame"));
 		return ResponseEntity.ok(resource);
 	}
 
