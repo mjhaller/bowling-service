@@ -22,6 +22,7 @@ import bowling.frame.Frame;
 import bowling.frame.Roll;
 
 @Entity
+@RestResource
 public class Game extends AbstractEntity implements Loggable {
 
 	@Enumerated(EnumType.STRING)
@@ -29,14 +30,13 @@ public class Game extends AbstractEntity implements Loggable {
 	
 	//TODO: move eager to be configured per query (maybe)
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@RestResource(exported = true)
 	private List<Frame> frames = new ArrayList<>();
 	
 	@ManyToOne
-	@RestResource(exported = false)
 	private Player player;
 	
-	@Transient
-	private Integer totalScore = 0;
+	private Integer totalScore = null;
 	
 	/**
 	* This is here as a convenience so we don't have to worry about creating
@@ -105,21 +105,30 @@ public class Game extends AbstractEntity implements Loggable {
 
 		Roll roll = new Roll();
 		roll.setPins(score);
+		Frame nextFrame = nextFrame();
+		if (nextFrame != null)
+			nextFrame.addRoll(roll);
+	}
+	
+	/**
+	 * Finds the next frame of the game  
+	 * 
+	 */
+	public Frame nextFrame() {
 
 		Iterator<Frame> framesIterator = frames.iterator();
 		Frame currentFrame = framesIterator.next();
 		while (currentFrame.canAdd() || framesIterator.hasNext()) {
 			if (currentFrame.canAdd())
 			{
-				currentFrame.addRoll(roll);
-				log().debug("Added " + roll + " to " + currentFrame.toString());
-				return;
+				return currentFrame;
 			}
 			if (currentFrame.isOpen() || currentFrame.isStrike() || currentFrame.isSpare()) {
 				if (framesIterator.hasNext())
 					currentFrame = framesIterator.next();
 			}
 		}
+		return null;
 	}
 
 	/**

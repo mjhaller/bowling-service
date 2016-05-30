@@ -1,13 +1,14 @@
 package bowling.frame;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,15 +20,17 @@ import bowling.game.GameType;
 public class Frame extends AbstractEntity {
 	
 	private Integer number;
-
+	
+	@RestResource(exported = false)
 	private Integer frameScore = null;
 	
 	//TODO: move eager fetchtype out of here and configure that at the repository level
-	@OneToMany(mappedBy = "frame", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-	private List<Roll> rolls = new LinkedList<>();
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<Roll> rolls = new ArrayList<>();
 	
 	@ManyToOne
 	@JsonIgnore
+	@RestResource(exported = false)
 	private Game game;
 
 	public Frame(Integer number) {
@@ -140,7 +143,7 @@ public class Frame extends AbstractEntity {
 	
 	public boolean addRoll(Roll roll)
 	{
-		roll.setFrame(this);
+//		roll.setFrame(this);
 		return getRolls().add(roll);
 	}
 	
