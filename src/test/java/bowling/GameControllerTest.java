@@ -1,6 +1,8 @@
 package bowling;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.IntNode;
-import com.google.common.collect.Iterators;
 
 /**
  * Placeholder for testing http
@@ -47,10 +48,16 @@ public class GameControllerTest {
 	}
 	
 	
+	private JsonNode gameCreate() throws Exception {
+		JsonNode player = testPost("/api/players", "{\"name\" : \"levi\"}");
+		JsonNode node = testPost("/api/games", "{ \"player\" : {\"id\" : " +  player.get("id").intValue() + " }}");
+		return node;
+	}
+	
 	@Test
-	public void gameCreate() throws Exception {
-		JsonNode node = testPost("/game", "{\"player\" : \"levi\"}");
-		assertEquals(10, Iterators.size(node.get("frames").elements()));
+	public void createGame() throws Exception
+	{
+		assertThat(gameCreate().get("id").intValue(), greaterThan(0));
 	}
 	
 	@Test
@@ -59,7 +66,7 @@ public class GameControllerTest {
 		gameCreate();
 		JsonNode node = null;
 		for (int i = 1; i <= 12 ; i++)
-			node = testPost("/game/1/roll", "{\"pins\" : \"10\"}");
+			node = testPost("/api/frame/1/rolls", "{\"pins\" : \"10\"}");
 		assertEquals(IntNode.valueOf(300), node.get("totalScore"));
 		
 	}
@@ -72,7 +79,7 @@ public class GameControllerTest {
 			    	.contentType(MediaType.APPLICATION_JSON)
 			    	.content(data)
 				)
-			    .andExpect(status().isOk())
+			    .andExpect(status().is2xxSuccessful())
 			    .andReturn();
 		return mapper.readValue(result.getResponse().getContentAsString(), JsonNode.class);
 	}
