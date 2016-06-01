@@ -153,7 +153,6 @@ public class Game extends AbstractEntity implements Loggable {
 				return rolls;
 			}
 			List<Roll> frameRolls = getFrames().get(frameNumber-1).getRolls();
-			//TODO: rethink the 
 			if (frameRolls.isEmpty())
 				return rolls;
 			rolls.addAll(frameRolls);

@@ -1,11 +1,7 @@
 package bowling;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

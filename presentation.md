@@ -7,25 +7,29 @@
 
 # Algorithm
 
-- Simple object-oriented domain model
+- Simple object-oriented - rich domain model
 - Handles placement of rolls in frames
 - Handles scoring all frames, as you go, on each roll event
 
 
 ---
 
-# Rest - Course Grained
+# Rest - Original
 
 
     POST /game  {"player" : "levi"} -> { "id" : 1 }
     POST /game/{id}/roll  {"pins" : 5}  -> { ... game ... }  (rpc-ish)
 
+
 ---
-# Rest - Finer Grained
 
-    POST /player  {"name" : "levi"} -> { "id" : 1 }
-    POST /game  {"player" : {"id" : } -> { "id" : 1 }
-    POST /game/{id}/roll  {"pins" : 5}  -> { ... game ... }
+# Rest - V2 - Finer Grained 
+
+note:  HAL/HATEOS oriented
+
+    POST /players                  {"name" : "levi"}       -> {href}
+    POST /games                    {"player" : {href} }    -> {... nextFrame ...}
+    POST /frames/{nextFrame}/roll  {"pins" : 5}            -> {... nextFrame ...}
+    GET  /games/{id}/frames                                -> {... "_embedded" : frames : [] ...}
 
 
-![](https://github.com/mjhaller/bowling-service/blob/course-grained/bowling_sequence_diagram.png)

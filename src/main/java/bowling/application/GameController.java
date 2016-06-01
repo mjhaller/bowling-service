@@ -48,7 +48,7 @@ public class GameController {
 		
 		Resource<Frame> resource = new Resource<Frame>(persistedFrame);
 		resource.add(entityLinks.linkToSingleResource(Game.class, game.getId()));
-		resource.add(entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame"));
+		addNextFrame(game, resource);
 
 		return ResponseEntity.ok(resource);
 	}
@@ -67,9 +67,15 @@ public class GameController {
 		
 		Resource<Frame> resource = new Resource<Frame>(persistedFrame);
 		resource.add(entityLinks.linkToSingleResource(Game.class, game.getId()));
-		resource.add(entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame"));
+		addNextFrame(game, resource);
 
 		return ResponseEntity.ok(resource);
+	}
+
+	private void addNextFrame(Game game, Resource<?> resource) {
+		Frame nextFrame = game.nextFrame();
+		if (nextFrame != null)
+			resource.add(entityLinks.linkToSingleResource(nextFrame).withRel("nextFrame"));
 	}
 	
 	
@@ -85,7 +91,7 @@ public class GameController {
 		if (game.getPlayer() != null)
 			resource.add(entityLinks.linkForSingleResource(game.getPlayer()).withRel("player"));
 		resource.add(entityLinks.linkToCollectionResource(Frame.class));
-		resource.add(entityLinks.linkToSingleResource(game.nextFrame()).withRel("nextFrame"));
+		addNextFrame(game, resource);
 		return ResponseEntity.ok(resource);
 	}
 
