@@ -5,6 +5,8 @@ Scoring as a Service for Bowling Alleys  (SaaSBA)
 # Caveats
 
 - No UI
+- No Validation
+- Marking stubbed
 
 # Installing
 
