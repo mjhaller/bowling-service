@@ -31,7 +31,7 @@ $ mvn spring-boot:run
 ```
 ## Play
 
-See [presentation](presentation.md)
+see [Sequence Diagram](bowling_sequence_diagram.png)
 
 # Test
 The following tests 
