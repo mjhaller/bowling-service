@@ -17,8 +17,8 @@
 # Rest - Original
 
 
-    POST /game  {"player" : "levi"} -> { "id" : 1 }
-    POST /game/{id}/roll  {"pins" : 5}  -> { ... game ... }  (rpc-ish)
+    POST /game            {"player" : "levi"} -> { "id" : 1 }
+    POST /game/{id}/roll  {"pins" : 5}        -> { ... game ... }  (rpc-ish)
 
 ---
 
