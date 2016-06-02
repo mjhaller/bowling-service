@@ -4,8 +4,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.springframework.hateoas.Identifiable;
+
 @MappedSuperclass
-public class AbstractEntity {
+public class AbstractEntity implements Identifiable<Long> {
 
 	private @Id @GeneratedValue Long id;
 	

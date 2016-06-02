@@ -16,10 +16,6 @@ public class Roll extends AbstractEntity {
 	//unimplemented
 	private Mark mark = Mark.OPEN;
 	
-	@ManyToOne
-	@JsonIgnore
-	private Frame frame;
-	
 	
 	public Mark getMark() {
 		return mark;
@@ -28,15 +24,6 @@ public class Roll extends AbstractEntity {
 	public void setMark(Mark mark) {
 		this.mark = mark;
 	}
-
-	public Frame getFrame() {
-		return frame;
-	}
-
-	public void setFrame(Frame frame) {
-		this.frame = frame;
-	}
-
 
 	@Override
 	public String toString() {
