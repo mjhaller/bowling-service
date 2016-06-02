@@ -1,6 +1,6 @@
 # Scoring Model
 
-![](https://raw.githubusercontent.com/mjhaller/bowling-service/master/bowling_class_diagram.png)
+![](bowling_class_diagram.png)
 
 ---
 
@@ -20,7 +20,6 @@
     POST /game  {"player" : "levi"} -> { "id" : 1 }
     POST /game/{id}/roll  {"pins" : 5}  -> { ... game ... }  (rpc-ish)
 
-
 ---
 
 # Rest - V2 - Finer Grained 
@@ -28,8 +27,22 @@
 note:  HAL/HATEOS oriented
 
     POST /players                  {"name" : "levi"}       -> {href}
-    POST /games                    {"player" : {href} }    -> {... nextFrame ...}
-    POST /frames/{nextFrame}/roll  {"pins" : 5}            -> {... nextFrame ...}
+    POST /games                    {"player" : {href} }    -> {... id ...}
+    GET  /games/{id}               {"player" : {href} }    -> {... totalScore, nextFrame ...}
+    POST /frames/{nextFrame}/roll  {"pins" : 5}            -> {... frameScore, nextFrame ...}
     GET  /games/{id}/frames                                -> {... "_embedded" : frames : [] ...}
 
+    PUT  /frames/{id}               { rolls : []}          -> {... frameScore, nextFrame ...}
+    
+---
 
+# Sequence Diagram - V2
+
+![](bowling_sequence_diagram.png)
+
+
+---
+
+# Systems Architecture
+
+![](system_architecture.png)
