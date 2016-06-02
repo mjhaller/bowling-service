@@ -28,7 +28,7 @@ note:  HAL/HATEOS oriented
 
     POST /players                  {"name" : "levi"}       -> {href}
     POST /games                    {"player" : {href} }    -> {... id ...}
-    GET  /games/{id}               {"player" : {href} }    -> {... totalScore, nextFrame ...}
+    GET  /games/{id}                                       -> {... totalScore, nextFrame ...}
     POST /frames/{nextFrame}/rolls {"pins" : 5}            -> {... frameScore, nextFrame ...}
     GET  /games/{id}/frames                                -> {... "_embedded" : frames : [] ...}
 
