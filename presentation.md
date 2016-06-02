@@ -24,7 +24,7 @@
 
 # Rest - V2 - Finer Grained 
 
-note:  HAL/HATEOS oriented
+_note:  HAL/HATEOS oriented_
 
     POST /players                  {"name" : "levi"}       -> {href}
     POST /games                    {"player" : {href} }    -> {... id ...}
@@ -37,6 +37,8 @@ note:  HAL/HATEOS oriented
 ---
 
 # Sequence Diagram - V2
+
+_note: diagram does not show calls to the persistence layer_
 
 ![](bowling_sequence_diagram.png)
 
